@@ -9,7 +9,7 @@ const addBooks = (request, h) => {
         author,
         summary,
         publisher,
-        pageAccount,
+        pageCount,
         readPage,
         reading  
     } = request.payload;
@@ -26,121 +26,121 @@ const addBooks = (request, h) => {
 
         failResponse.code(400);
         return failResponse;
-    }
-
-    const finished = "finished";
-
-    if ( pageAccount === readPage ) {
-        const newBook = {
-            id,
-            name, 
-            year,
-            author,
-            summary,
-            publisher,
-            pageAccount,
-            readPage,
-            [finished] : true,
-            reading,
-            insertedAt,
-            updatedAt
-        }
-
-        const listBook = {
-            id,
-            name,
-            publisher
-        }
-
-        books.push(listBook);
-        listBooks.push(newBook);
-        const addListBook = listBooks.filter((list_book) => list_book.id === id).length > 0;
-        const addSuccessBook = books.filter((book) => book.id === id).length > 0;
-
-        if ( addSuccessBook && addListBook ) {
-            const successResponse = h.response({
-                status: 'success',
-                message: 'Buku berhasil ditambahkan',
-                data: {
-                    bookId: id
-                }
-            });
-
-            successResponse.code(201);
-            return successResponse;
-        }
-
-        const failResponse = h.response({
-            status: 'error',
-            message: 'Buku gagal ditambahkan'
-        })
-
-        failResponse.code(500);
-        return failResponse;
-
-    } else if ( pageAccount > readPage ) {
-        const newBook = {
-            id,
-            name, 
-            year,
-            author,
-            summary,
-            publisher,
-            pageAccount,
-            readPage,
-            [finished] : false,
-            reading,
-            insertedAt,
-            updatedAt
-        }
-
-        const listBook = {
-            id,
-            name,
-            publisher
-        }
-
-        books.push(listBook);
-        listBooks.push(newBook);
-        const addListBook = listBooks.filter((list_book) => list_book.id === id).length > 0;
-        const addSuccessBook = books.filter((book) => book.id === id).length > 0;
-
-        if ( addSuccessBook && addListBook ) {
-            const successResponse = h.response({
-                status: 'success',
-                message: 'Buku berhasil ditambahkan',
-                data: {
-                    bookId: id
-                }
-            });
-
-            successResponse.code(201);
-            return successResponse;
-        }
-
-        const failResponse = h.response({
-            status: 'error',
-            message: 'Buku gagal ditambahkan'
-        })
-
-        failResponse.code(500);
-        return failResponse;
-    } else if ( pageAccount < readPage ) {
-        const failResponse = h.response({
-            status: 'fail',
-            message: 'Gagal menambahkan buku. readPage tidak boleh lebih besar dari pageCount'
-        })
-
-        failResponse.code(400);
-        return failResponse;
     } else {
-        const failResponse = h.response({
-            status: 'error',
-            message: 'Buku gagal ditambahkan'
-        })
+        const finished = "finished";
 
-        failResponse.code(500);
-        return failResponse;
+        if ( pageCount === readPage ) {
+            const newBook = {
+                id,
+                name, 
+                year,
+                author,
+                summary,
+                publisher,
+                pageCount,
+                readPage,
+                [finished] : true,
+                reading,
+                insertedAt,
+                updatedAt
+            }
+
+            const listBook = {
+                id,
+                name,
+                publisher
+            }
+
+            books.push(listBook);
+            listBooks.push(newBook);
+            const addListBook = listBooks.filter((list_book) => list_book.id === id).length > 0;
+            const addSuccessBook = books.filter((book) => book.id === id).length > 0;
+
+            if ( addSuccessBook && addListBook ) {
+                const successResponse = h.response({
+                    status: 'success',
+                    message: 'Buku berhasil ditambahkan',
+                    data: {
+                        bookId: id
+                    }
+                });
+
+                successResponse.code(201);
+                return successResponse;
+            }
+
+            const failResponse = h.response({
+                status: 'error',
+                message: 'Buku gagal ditambahkan'
+            })
+
+            failResponse.code(500);
+            return failResponse;
+
+        } else if ( pageCount > readPage ) {
+            const newBook = {
+                id,
+                name, 
+                year,
+                author,
+                summary,
+                publisher,
+                pageCount,
+                readPage,
+                [finished] : false,
+                reading,
+                insertedAt,
+                updatedAt
+            }
+
+            const listBook = {
+                id,
+                name,
+                publisher
+            }
+
+            books.push(listBook);
+            listBooks.push(newBook);
+            const addListBook = listBooks.filter((list_book) => list_book.id === id).length > 0;
+            const addSuccessBook = books.filter((book) => book.id === id).length > 0;
+
+            if ( addSuccessBook && addListBook ) {
+                const successResponse = h.response({
+                    status: 'success',
+                    message: 'Buku berhasil ditambahkan',
+                    data: {
+                        bookId: id
+                    }
+                });
+
+                successResponse.code(201);
+                return successResponse;
+            }
+
+            const failResponse = h.response({
+                status: 'error',
+                message: 'Buku gagal ditambahkan'
+            })
+
+            failResponse.code(500);
+            return failResponse;
+        } else if ( pageCount < readPage ) {
+            const failResponse = h.response({
+                status: 'fail',
+                message: 'Gagal menambahkan buku. readPage tidak boleh lebih besar dari pageCount'
+            })
+
+            failResponse.code(400);
+            return failResponse;
+        } else {
+            const failResponse = h.response({
+                status: 'error',
+                message: 'Buku gagal ditambahkan'
+            })
+
+            failResponse.code(500);
+            return failResponse;
+        }
     }
 
 }
@@ -149,7 +149,7 @@ const getAllBooks = (request, h) => {
     
   const tampungBuku = [];
   let ini_response = null;
-  let {name = ''} = request.query;
+  let {name = '', reading = '', finished = ''} = request.query;
   let hasil = -1;
   if (listBooks.size === 0) {
     ini_response = h.response({status: 'success', data: {books: []}});
@@ -158,12 +158,34 @@ const getAllBooks = (request, h) => {
       hasil = -1;
 
       // Jika request query tidak di isikan name
-      if (name !== '') {
-        if (name === listBooks[i].name) {
+      if (name !== '' || reading !== '' || finished !== '') {
+        if ( reading === 0 ) {
+            reading = false;
+        } else if ( reading === 1 ) {
+            reading = true;
+        }
+
+        if (name === listBooks[i].name && reading == listBooks[i].reading &&
+            finished == listBooks[i].finished && finished !== '' &&
+            reading !== '') {
           hasil = 1;
+        } else if ( name === listBooks[i].name && reading == listBooks[i].reading &&
+            reading !== '' ) {
+            hasil = 3;
+        } else if ( name === listBooks[i].name && finished == listBooks[i].finished &&
+            finished !== '' ) {
+            hasil = 4;
+        } else if ( reading == listBooks[i].reading &&
+            finished == listBooks[i].finished && finished !== '' &&
+            reading !== '' ) {
+            hasil = 5;
         } else if (listBooks[i].name.toLowerCase().includes(
             name.toLowerCase()) && name !== '') {
           hasil = 2;
+        } else if ( reading == listBooks[i].reading && reading !== '' ) {
+            hasil = 6
+        } else if ( finished == listBooks[i].finished && finished !== '' ) {
+            hasil = 7;
         }
 
       } else {
@@ -231,7 +253,7 @@ const editBookById = (request, h) => {
         author,
         summary,
         publisher,
-        pageAccount,
+        pageCount,
         readPage,
         reading  
     } = request.payload;
@@ -249,7 +271,7 @@ const editBookById = (request, h) => {
     const finished = "finished";
     const updatedAt = new Date().toISOString();
 
-    if ( pageAccount === readPage ) {
+    if ( pageCount === readPage ) {
 
         const index = listBooks.findIndex((ls_book) => ls_book.id === bookId);
         if ( index !== -1 ) {
@@ -260,7 +282,7 @@ const editBookById = (request, h) => {
                 author,
                 summary,
                 publisher,
-                pageAccount,
+                pageCount,
                 readPage,
                 [finished] : true,
                 reading,
@@ -277,7 +299,7 @@ const editBookById = (request, h) => {
             return response;
         }
 
-    } else if ( pageAccount > readPage ) {
+    } else if ( pageCount > readPage ) {
 
         const index = listBooks.findIndex((ls_book) => ls_book.id === bookId);
         if ( index !== -1 ) {
@@ -288,7 +310,7 @@ const editBookById = (request, h) => {
                 author,
                 summary,
                 publisher,
-                pageAccount,
+                pageCount,
                 readPage,
                 [finished] : false,
                 reading,
@@ -305,7 +327,7 @@ const editBookById = (request, h) => {
             return response;
         }
 
-    } else if ( pageAccount < readPage ) {
+    } else if ( pageCount < readPage ) {
 
         const failResponse = h.response({
             status: 'fail',

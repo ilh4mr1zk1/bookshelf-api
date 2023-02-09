@@ -10,7 +10,12 @@ const routes = [
   {
     method: 'POST',
     path: '/books',
-    handler: addBooks
+    handler: addBooks,
+    options: {
+      cors: {
+        origin: ['*'],
+      },
+    },
   },
   {
     method: 'GET',
